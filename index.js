@@ -5,7 +5,9 @@ const registrationEmail = registrationForm.elements["email"]
 registrationForm.addEventListener("submit", validate);
 
 function validate(event) {
+
     event.preventDefault(); // Stop submission first, allow if all checks pass
+
     const RegistrationUserNameValue = validateRegisterUsername();
     if (RegistrationUserNameValue === false) {
         event.preventDefault();
@@ -46,8 +48,9 @@ function validateRegisterUsername() {
         return false;
     }
 
-    if (!/^[a-zA-Z0-9]+$/.test(username)) { 
-        // still trying to get the hang of regex, ^ Start of String, Ensures the pattern matches from the beginning of the string. 
+    if (!/^[a-zA-Z0-9]+$/.test(username)) {
+        // still trying to get the hang of regex,
+        //  ^ Start of String, Ensures the pattern matches from the beginning of the string. 
         // The .* ensures we check the entire string.
         //  (.)-> Captures any character
         // This stores the first repeating character into group #1 (\1).
@@ -63,15 +66,37 @@ function validateRegisterUsername() {
         registrationUsername.focus();
         return false;
     }
-   
+
 
     return username;
 }
 
 function validateRegistrationEmail() {
     let emailValue = registrationEmail.value.trim();
+
     if (emailValue === "") {
         alert("You didn't provide! an Email")
+        registrationEmail.focus();
+        return false;
+    }
+    if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(emailValue)) { // example from the lecture used here
+
+        alert("This isn't a valid email address!");
+        registrationEmail.focus();
+        return false;
+    }
+
+    // if (emailValue.toLowerCase().slice(-12) === "@example.com") { // first soltuion
+    //     alert("Emails from 'example.com' are not allowed!");
+    //     return false;
+    // }
+
+    if (emailValue.toLowerCase().endsWith("@example.com")) { // found a cleaner way to do it by using .endsWith()
+        //When you call .endsWith(searchString),
+        //Gets the length of searchString.
+        //Compares the last N characters of the original string (where N is the length of searchString).
+        //Returns true if they match, otherwise false.
+        alert("Stop trying to play with us! Don't use example.com!");
         registrationEmail.focus();
         return false;
     }
