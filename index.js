@@ -5,7 +5,7 @@ const registrationEmail = registrationForm.elements["email"]
 registrationForm.addEventListener("submit", validate);
 
 function validate(event) {
-
+    event.preventDefault(); // Stop submission first, allow if all checks pass
     const RegistrationUserNameValue = validateRegisterUsername();
     if (RegistrationUserNameValue === false) {
         event.preventDefault();
@@ -32,7 +32,22 @@ function validateRegisterUsername() {
         registrationUsername.focus();
         return false;
     }
-    if (/^(?!.*(.)\1*$).{2,}$/.test(username) === false) {  // still trying to get the hang of regex, ^ Start of String, Ensures the pattern matches from the beginning of the string. 
+
+    if (!/^[a-zA-Z0-9]+$/.test(username)) { //Originally had this if statement last but it wasn't working properly because of the order
+        //  ^	Ensures the match starts from the beginning of the string
+        //  $	Ensures the match ends at the end of the string        //
+        // [ ]	Defines a character set (a group of allowed characters)
+        // a-z	Matches lowercase letters (a to z)
+        // A-Z	Matches uppercase letters (A to Z)
+        // 0-9	Matches digits (0 to 9)
+        //  +	Ensures at least one character is present
+        alert("Please dont use any special characters or blank spaces!")
+        registrationUsername.focus();
+        return false;
+    }
+
+    if (!/^[a-zA-Z0-9]+$/.test(username)) { 
+        // still trying to get the hang of regex, ^ Start of String, Ensures the pattern matches from the beginning of the string. 
         // The .* ensures we check the entire string.
         //  (.)-> Captures any character
         // This stores the first repeating character into group #1 (\1).
@@ -48,12 +63,13 @@ function validateRegisterUsername() {
         registrationUsername.focus();
         return false;
     }
+   
 
     return username;
 }
 
 function validateRegistrationEmail() {
-    let emailValue = registrationEmail.value
+    let emailValue = registrationEmail.value.trim();
     if (emailValue === "") {
         alert("You didn't provide! an Email")
         registrationEmail.focus();
