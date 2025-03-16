@@ -3,6 +3,7 @@ const registrationUsername = registrationForm.elements["username"]
 const registrationEmail = registrationForm.elements["email"]
 const registrationPassword = registrationForm.elements["password"]
 const registrationConfirmPassword = registrationForm.elements["passwordCheck"]
+const registrationTermsAndConditions = registrationForm.elements["terms"]
 registrationForm.addEventListener("submit", validate);
 
 function validate(event) {
@@ -21,6 +22,11 @@ function validate(event) {
 
     const passwordValue = validateRegisterPassword();
     if (passwordValue === false) {
+        return false;
+    }
+
+    const termsAndConditionsValue = validateTermsAndConditions()
+    if(termsAndConditionsValue === false){
         return false;
     }
 }
@@ -43,8 +49,8 @@ function validateRegisterUsername() {
         return false;
     }
 
-    // The username cannot contain any special characters or whitespace.
-    if (!/^[a-zA-Z0-9]+$/.test(username)) {
+      // The username cannot contain any special characters or whitespace.
+      if (!/^[a-zA-Z0-9]+$/.test(username)) {
         // ^ Ensures the match starts from the beginning of the string
         // $ Ensures the match ends at the end of the string
         // [ ] Defines a character set (a group of allowed characters)
@@ -57,24 +63,13 @@ function validateRegisterUsername() {
         return false;
     }
 
-    // The username must contain at least two unique characters.
-    if (!/^(?!.*(.)\1*$).{2,}$/.test(username)) {
-        // ^ Start of String, Ensures the pattern matches from the beginning of the string.
-        // The .* ensures we check the entire string.
-        // (.) -> Captures any character
-        // This stores the first repeating character into group #1 (\1).
-        // \1* -> Checks if the entire remaining string consists of only that character
-        // If the whole string is just one repeated character (aaaa, 1111, %%%%), this part matches.
-        // (?! ... ) → Negative Lookahead
-        // The (?! ... ) ensures that the pattern inside does NOT match.
-        // So, if the entire string is only one repeated character, the regex fails.
-        // . -> Matches any character
-        // {2,} -> Ensures at least 2 characters long
-        // $ -> Marks end of the string
-        alert("Username must contain at least two unique characters!");
-        registrationUsername.focus();
-        return false;
-    }
+     // The username must contain at least two unique characters.
+     let uniqueCharacters = new Set(username);
+     if (uniqueCharacters.size < 2) {
+         alert("Username must contain at least two unique characters!");
+         registrationUsername.focus();
+         return false;
+     }
 
     return username;
 }
@@ -186,4 +181,14 @@ function validateRegisterPassword() {
     }
 
     return passwordValue;
+}
+
+// Registration Form - Terms and Conditions:
+function validateTermsAndConditions() {
+    if (!registrationTermsAndConditions.checked) { 
+        alert("You must accept the Terms and Conditions to proceed.");
+        registrationTermsAndConditions.focus();
+        return false;
+    }
+    return true;
 }
