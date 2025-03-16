@@ -192,3 +192,5 @@ function validateTermsAndConditions() {
     }
     return true;
 }
+
+//Registration Form - Form Submission:
