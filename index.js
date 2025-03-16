@@ -32,7 +32,18 @@ function validateRegisterUsername() {
         registrationUsername.focus();
         return false;
     }
-    if (!/(.).*\1|(.).*?\2/.test(username)) {
+    if (/^(?!.*(.)\1*$).{2,}$/.test(username) === false) {  // still trying to get the hang of regex, ^ Start of String, Ensures the pattern matches from the beginning of the string. 
+        // The .* ensures we check the entire string.
+        //  (.)-> Captures any character
+        // This stores the first repeating character into group #1 (\1).
+        // \1* -> Checks if the entire remaining string consists of only that character
+        // If the whole string is just one repeated character (aaaa, 1111, %%%%), this part matches.
+        //  (?! ... ) → Negative Lookahead
+        // The (?! ... ) ensures that the pattern inside does NOT match.
+        // So, if the entire string is only one repeated character, the regex fails.
+        //   . ->Matches any character
+        // {2,} -> Ensures at least 2 characters long
+        // $ -> Marks end of the string
         alert("Username must contain at least two unique characters!");
         registrationUsername.focus();
         return false;
