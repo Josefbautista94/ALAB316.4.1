@@ -9,36 +9,21 @@ const loginUsername = loginForm.elements["username"];
 const loginPassword = loginForm.elements['password']
 const loginPersist = loginForm.elements["persist"]
 
-registrationForm.addEventListener("submit", validate);
+registrationForm.addEventListener("submit", validateRegistration);
+loginForm.addEventListener("submit", validateLogin);
 
-function validate(event) {
+function validateRegistration(event) {
+    event.preventDefault(); // Stop form submission first
 
-    event.preventDefault(); // Stop submission first, allow if all checks pass
-
-    const RegistrationUserNameValue = validateRegisterUsername();
-    if (RegistrationUserNameValue === false) {
-        return false;
-    }
-
-    const emailValue = validateRegistrationEmail()
-    if (emailValue === false) {
-        return false;
-    }
-
+    const usernameValue = validateRegisterUsername();
+    const emailValue = validateRegistrationEmail();
     const passwordValue = validateRegisterPassword();
-    if (passwordValue === false) {
-        return false;
-    }
+    const termsAccepted = validateTermsAndConditions();
 
-    const termsAndConditionsValue = validateTermsAndConditions()
-    if (termsAndConditionsValue === false) {
-        return false;
-    }
-
+    //  Allow form submission only if all fields are valid
     if (usernameValue && emailValue && passwordValue && termsAccepted) {
-        storeUserData(usernameValue, emailValue, passwordValue);
+        saveUserData(usernameValue, emailValue, passwordValue);
     }
-
 }
 
 //Registration Form - Username Validation:
@@ -87,7 +72,7 @@ function validateRegisterUsername() {
     // Uses JSON.parse() to convert the stored JSON string back into a JavaScript array.
 
     // Check if username already exists 
-    let usernameTaken = users.some(user => user.username === username);  // .some(user => user.username === username) -> Checks if any stored user has the same username.
+   let usernameTaken = users.some(user => user.username.toLowerCase() === username);  // .some(user => user.username === username) -> Checks if any stored user has the same username.
     // If a match is found, an error message appears
     if (usernameTaken) {
         alert("That username is already taken! Please think of another one.");
@@ -261,9 +246,9 @@ function saveUserData(username, email, password) { //username entered my the use
     alert("Registration was successful! Try logging in now.");
 }
 
-function validateLoginUserName() {
+function validateLoginUsername() {
 
-    let username = loginUsername.value().trim().toLowerCase()
+    let username = loginUsername.value.trim().toLowerCase();
 
     if (username === "") {
         alert("You didn't enter a username!")
@@ -274,7 +259,7 @@ function validateLoginUserName() {
     let users = JSON.parse(localStorage.getItem("users")) || [] // we're retrieving stored users
 
     //checking if the user name exists
-    let existingUser = users.some(user => user.username === username)
+    let existingUser = users.find(user => user.username.toLowerCase() === username);
 
     if (!existingUser) {
         alert("You don't have an account! Register to be able to login.")
@@ -285,11 +270,11 @@ function validateLoginUserName() {
     return username;
 }
 
-function validatePassword(username){
-    
+function validateLoginPassword(username) {
+
     let password = loginPassword.value.trim();
 
-    if(password === ""){
+    if (password === "") {
         alert("You left the password blank! Please enter a password.")
         loginPassword.focus();
         return false;
@@ -301,10 +286,29 @@ function validatePassword(username){
     //finding the specific user in the local storage
     let user = users.find(user => user.username === username);
 
-    if(user.password !==password){
-        alert("Wrong password!")
+    if (!user) {
+        alert("User not found. Please check your username.");
+        loginUsername.focus();
+        return false;
+    }
+
+    if (user.password !== password) {
+        alert("Wrong password!");
         loginPassword.focus();
+        return false;
     }
 
     return password;
+}
+
+function validateLogin(event) {
+
+    event.preventDefault();
+
+    let username = validateLoginUsername();
+    let password = validateLoginPassword(username);
+    if (!username || !password) return;
+
+    alert(loginPersist.checked ? "Login successful! You will stay logged in." : "Login successful!");
+    loginForm.reset();
 }
