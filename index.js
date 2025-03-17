@@ -1,9 +1,14 @@
-const registrationForm = document.getElementById("registration")
-const registrationUsername = registrationForm.elements["username"]
-const registrationEmail = registrationForm.elements["email"]
-const registrationPassword = registrationForm.elements["password"]
-const registrationConfirmPassword = registrationForm.elements["passwordCheck"]
-const registrationTermsAndConditions = registrationForm.elements["terms"]
+const registrationForm = document.getElementById("registration");
+const registrationUsername = registrationForm.elements["username"];
+const registrationEmail = registrationForm.elements["email"];
+const registrationPassword = registrationForm.elements["password"];
+const registrationConfirmPassword = registrationForm.elements["passwordCheck"];
+const registrationTermsAndConditions = registrationForm.elements["terms"];
+const loginForm = document.getElementById("login");
+const loginUsername = loginForm.elements["username"];
+const loginPassword = loginForm.elements['password']
+const loginPersist = loginForm.elements["persist"]
+
 registrationForm.addEventListener("submit", validate);
 
 function validate(event) {
@@ -254,4 +259,52 @@ function saveUserData(username, email, password) { //username entered my the use
 
     // Success message!
     alert("Registration was successful! Try logging in now.");
+}
+
+function validateLoginUserName() {
+
+    let username = loginUsername.value().trim().toLowerCase()
+
+    if (username === "") {
+        alert("You didn't enter a username!")
+        loginUsername.focus()
+        return false;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [] // we're retrieving stored users
+
+    //checking if the user name exists
+    let existingUser = users.some(user => user.username === username)
+
+    if (!existingUser) {
+        alert("You don't have an account! Register to be able to login.")
+        loginUsername.focus()
+        return false;
+    }
+
+    return username;
+}
+
+function validatePassword(username){
+    
+    let password = loginPassword.value.trim();
+
+    if(password === ""){
+        alert("You left the password blank! Please enter a password.")
+        loginPassword.focus();
+        return false;
+    }
+
+    //retrieving stored user
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    //finding the specific user in the local storage
+    let user = users.find(user => user.username === username);
+
+    if(user.password !==password){
+        alert("Wrong password!")
+        loginPassword.focus();
+    }
+
+    return password;
 }
